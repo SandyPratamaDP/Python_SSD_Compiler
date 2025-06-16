@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.dll
+*.so
+
+# Distribution / packaging
+.Python/
+build/
+dist/
+*.egg-info/
+*.eggs/
+wheels/
+*.whl
+sdist/
+
+# Development environments / IDEs
+.idea/                  # JetBrains IDEs (PyCharm, IntelliJ, etc.)
+.vscode/                # Visual Studio Code
+.mypy_cache/            # MyPy static type checker cache
+.pytest_cache/          # Pytest cache
+.venv/                  # Virtual environment folder (common name)
+env/                    # Virtual environment folder (another common name)
+venv/                   # Virtual environment folder (another common name)
+*.env                   # Environment variable files
+*.bak                   # Backup files
+
+# Jupyter Notebook files
+.ipynb_checkpoints
+
+# OS-specific files
+.DS_Store               # macOS
+Thumbs.db               # Windows
+
+# Logs and other temporary files
+*.log
+*.tmp
