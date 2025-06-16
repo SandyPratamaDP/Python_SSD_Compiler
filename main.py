@@ -6,7 +6,7 @@ from datetime import datetime
 from dynamic_console import DynamicConsole
 from csv_parser import parse_csv_sections
 from data_processor import extract_coil_no_from_filename, process_record
-from excel_exporter_py import export_to_excel
+from excel_exporter import export_to_excel
 import pandas as pd # Required for pd.DataFrame
 
 def main():
