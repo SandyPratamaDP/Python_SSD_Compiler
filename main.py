@@ -48,7 +48,7 @@ def main():
             continue
 
     if start_date is None or end_date is None:
-        DynamicConsole.print_message("Error: Invalid date format. UseYYYY-MM-DD orYYYY-MM-DD HH:mm.", "error")
+        DynamicConsole.print_message("Error: Invalid date format. UseYYYY-MM-DD or YYYY-MM-DD HH:mm.", "error")
         return
 
     DynamicConsole.print_message(
