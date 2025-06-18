@@ -1,8 +1,7 @@
 import re
 import pandas as pd # Required for pandas Series
-from dynamic_console import DynamicConsole # Import DynamicConsole Class
 
-def extract_coil_no_from_filename(filename):
+def extract_coil_no_from_filename(filename, console_instance):
     """
     Extracts the 'Coil No' (for example, KE5538) from the file name.
     Pattern: 2 uppercase letters followed by 4 numbers.
@@ -11,7 +10,7 @@ def extract_coil_no_from_filename(filename):
     match = re.search(pattern, filename)
     if match and len(match.groups()) > 0:
         return match.group(1)
-    DynamicConsole.print_message(
+    console_instance.print_message(
         f"    Warning: Coil No is not found in file name '{filename}' or does not match the new pattern. Using an empty string.", "warning"
     )
     return ""

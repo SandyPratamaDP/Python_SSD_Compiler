@@ -3,10 +3,10 @@ import argparse
 from datetime import datetime
 
 # Import functions and classes from other modules
-from dynamic_console import DynamicConsole
+from console.dynamic_console import DynamicConsole
 from csv_parser import parse_csv_sections
 from data_processor import extract_coil_no_from_filename, process_record
-from excel_exporter import export_to_excel
+from excel_processor.excel_exporter import export_to_excel
 import pandas as pd # Required for pd.DataFrame
 
 def main():
@@ -25,6 +25,7 @@ def main():
     custom_output_filename_base = args.outputFileName
 
     date_formats = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"]
+    console_output = DynamicConsole
 
     # Parsing start_date
     start_date = None
@@ -41,26 +42,26 @@ def main():
         try:
             end_date = datetime.strptime(end_date_str, fmt)
             # If only a date is given for end_date, set it to the end of the day
-            if ' ' not in end_date_str or len(end_date_str.split(' '))[0] == 10: # type: ignore
+            if ' ' not in end_date_str:
                 end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
             break
         except ValueError:
             continue
 
     if start_date is None or end_date is None:
-        DynamicConsole.print_message("Error: Invalid date format. UseYYYY-MM-DD or YYYY-MM-DD HH:mm.", "error")
+        console_output.print_message("Error: Invalid date format. UseYYYY-MM-DD or YYYY-MM-DD HH:mm.", "error")
         return
 
-    DynamicConsole.print_message(
+    console_output.print_message(
         f"Search for CSV files in '{folder_path}' from '{start_date}' to '{end_date}'.", "info"
     )
 
     if not os.path.isdir(folder_path):
-        DynamicConsole.print_message(f"Error: The folder '{folder_path}' was not found.", "error")
+        console_output.print_message(f"Error: The folder '{folder_path}' was not found.", "error")
         return
 
     if start_date > end_date:
-        DynamicConsole.print_message("Warning: The start date is greater than the end date. Reverse the order.", "warning")
+        console_output.print_message("Warning: The start date is greater than the end date. Reverse the order.", "warning")
         start_date, end_date = end_date, start_date
 
     csv_files = []
@@ -72,19 +73,19 @@ def main():
                 if start_date <= file_mtime <= end_date:
                     csv_files.append(f_path)
             except Exception as e:
-                DynamicConsole.print_message(f"Warning: Failed to get the modification time of file '{f_name}': {e}", "warning")
+                console_output.print_message(f"Warning: Failed to get the modification time of file '{f_name}': {e}", "warning")
 
     if not csv_files:
-        DynamicConsole.print_message(f"No CSV files were found in '{folder_path}' in that date range.", "warning")
+        console_output.print_message(f"No CSV files were found in '{folder_path}' in that date range.", "warning")
         return
 
     all_processed_records_for_excel = []
 
     for file_path in csv_files:
-        DynamicConsole.print_message(f"Reading file: {os.path.basename(file_path)}", "info")
+        console_output.print_message(f"Reading file: {os.path.basename(file_path)}", "info")
         
-        coil_no = extract_coil_no_from_filename(os.path.basename(file_path))
-        top_df, bottom_df = parse_csv_sections(file_path)
+        coil_no = extract_coil_no_from_filename(os.path.basename(file_path), console_output)
+        top_df, bottom_df = parse_csv_sections(file_path, console_output)
 
         for index, row_series in top_df.iterrows():
             processed_rec = process_record(row_series, coil_no, "Top")
@@ -119,9 +120,9 @@ def main():
     # Forcefully add .xlsx extension
     output_full_filename = f"{output_file_name_base}_{current_timestamp_for_filename}.xlsx"
     
-    export_to_excel(final_df, folder_path, output_full_filename) # type: ignore
+    export_to_excel(final_df, folder_path, output_full_filename, console_output)
 
-    DynamicConsole.print_message(f"\nFinish processing the CSV files.", "info")
+    console_output.print_message(f"\nFinish processing the CSV files.", "info")
 
 if __name__ == "__main__":
     main()

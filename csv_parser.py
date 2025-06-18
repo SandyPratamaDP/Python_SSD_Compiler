@@ -1,9 +1,8 @@
 import pandas as pd
 import io
 import os # Required for os.path.basename
-from dynamic_console import DynamicConsole # Impor kelas DynamicConsole
 
-def parse_csv_sections(file_path):
+def parse_csv_sections(file_path, console_instance):
     """
     Reads a CSV file, separating the 'Top' and 'Bottom' parts based on the 'Bottom' delimiter.
     Returns two DataFrame handles.
@@ -13,7 +12,7 @@ def parse_csv_sections(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             file_content = f.readlines()
     except Exception as e:
-        DynamicConsole.print_message(f"Error: Failed to read file '{os.path.basename(file_path)}': {e}", "error")
+        console_instance.print_message(f"Error: Failed to read file '{os.path.basename(file_path)}': {e}", "error")
         return pd.DataFrame(), pd.DataFrame()
 
     bottom_section_start_index = -1
@@ -45,9 +44,9 @@ def parse_csv_sections(file_path):
         # Using StringIO to read strings as files
         top_df = pd.read_csv(io.StringIO(top_csv_string), sep=',', na_values=['', 'NULL'])
     except pd.errors.EmptyDataError:
-        DynamicConsole.print_message(f"    Warning: TOP section in '{os.path.basename(file_path)}' is empty.", "warning")
+        console_instance.print_message(f"    Warning: TOP section in '{os.path.basename(file_path)}' is empty.", "warning")
     except Exception as e:
-        DynamicConsole.print_message(f"    Error: Failed to read TOP data from '{os.path.basename(file_path)}': {e}", "error")
+        console_instance.print_message(f"    Error: Failed to read TOP data from '{os.path.basename(file_path)}': {e}", "error")
 
     # Processing the 'Bottom' part
     if bottom_section_start_index != -1:
@@ -60,8 +59,8 @@ def parse_csv_sections(file_path):
         try:
             bottom_df = pd.read_csv(io.StringIO(bottom_csv_string), sep=',', na_values=['', 'NULL'])
         except pd.errors.EmptyDataError:
-            DynamicConsole.print_message(f"    Warning: The BOTTOM section in '{os.path.basename(file_path)}' is empty.", "warning")
+            console_instance.print_message(f"    Warning: The BOTTOM section in '{os.path.basename(file_path)}' is empty.", "warning")
         except Exception as e:
-            DynamicConsole.print_message(f"    Error: Failed to read BOTTOM data from '{os.path.basename(file_path)}': {e}", "error")
+            console_instance.print_message(f"    Error: Failed to read BOTTOM data from '{os.path.basename(file_path)}': {e}", "error")
             
     return top_df, bottom_df
